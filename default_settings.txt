@@ -43,12 +43,12 @@ Group.nrofHosts = 10
 Group.nrofApplications = 0
 
 # Sparce Soldiers Top Right
-Group1.groupID = Solider_SA_
+Group1.groupID = Soldier_SA_
 Group1.clusterCenter = 3792, 1471
 Group1.clusterRange = 600
 
 # Sparce Soldiers Top Left
-Group2.groupID = Solider_DA_
+Group2.groupID = Soldier_DA_
 Group2.clusterCenter = 1600, 1100
 Group2.clusterRange = 200
 

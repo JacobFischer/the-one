@@ -92,6 +92,14 @@ public class DTNHost implements Comparable<DTNHost> {
 	}
 
 	/**
+	 * Returns if this host is an NCL
+	 * @returns if this is an NCL (not a soldier)
+	 */
+	public boolean isNCL() {
+		return !this.name.contains("Soldier");
+	}
+
+	/**
 	 * Returns a new network interface address and increments the address for
 	 * subsequent calls.
 	 * @return The next address.

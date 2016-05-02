@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A message that is created at a node or passed between nodes.
@@ -16,6 +17,9 @@ import java.util.Set;
 public class Message implements Comparable<Message> {
 	/** Value for infinite TTL of message */
 	public static final int INFINITE_TTL = -1;
+	public static final int CRITICALITY_MAX = 0;
+	public static final int CRITICALITY_MIN = -5;
+
 	private DTNHost from;
 	private DTNHost to;
 	/** Identifier of the message */
@@ -34,6 +38,11 @@ public class Message implements Comparable<Message> {
 	private double timeCreated;
 	/** Initial TTL of the message */
 	private int initTtl;
+
+	/** @note Added by Jacob
+	 * The classification of the message,
+	 */
+	private int criticality;
 
 	/** if a response to this message is required, this is the size of the
 	 * response message (or 0 if no response is requested) */
@@ -77,6 +86,7 @@ public class Message implements Comparable<Message> {
 		this.requestMsg = null;
 		this.properties = null;
 		this.appID = null;
+		this.criticality = ThreadLocalRandom.current().nextInt(CRITICALITY_MIN, CRITICALITY_MAX + 1); // random int between the min and max criticalities
 
 		Message.nextUniqueId++;
 		addNodeOnPath(from);
@@ -145,6 +155,21 @@ public class Message implements Comparable<Message> {
 	 */
 	public int getHopCount() {
 		return this.path.size() -1;
+	}
+
+	/**
+	 * Returns the criticality
+	 * @return the criticality
+	 */
+	public int getCriticality() {
+		return this.criticality;
+	}
+
+	/**
+	 * Returns the amount of hops this message has passed
+	 */
+	public void setCriticality(int crit) {
+		this.criticality = Math.max(Math.min(crit, CRITICALITY_MAX), CRITICALITY_MIN);
 	}
 
 	/**
