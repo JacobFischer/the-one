@@ -16,7 +16,7 @@ firstinterface.transmitRange = 50
 
 mediumrange.type = SimpleBroadcastInterface
 # transmit speed of 2 Mbps = 250kBps
-mediumrange.transmitSpeed = 240k
+mediumrange.transmitSpeed = 1240k
 mediumrange.transmitRange = 100
 
 longrange.type = SimpleBroadcastInterface
@@ -29,7 +29,7 @@ Scenario.nrofHostGroups = 8
 
 # common settings for all groups
 Group.movementModel = ClusterMovement
-Group.router = EpidemicRouter
+Group.router = OpportunisticDataCachingRouter
 Group.bufferSize = 5M
 Group.waitTime = 0, 120
 #All nodes have the firstinterface inteface
@@ -67,7 +67,7 @@ Group5.groupID = Car_
 Group5.bufferSize = 50M
 Group5.movementModel = CarMovement
 Group5.routeFile = data/cluster/ferryroute.wkt
-Group5.routeType = 2
+Group5.routeType = 1
 Group5.waitTime = 10, 30
 Group5.speed = 3, 5
 Group5.nrofHosts = 10
@@ -119,7 +119,7 @@ Events1.interval = 25,35
 # Message sizes (50kB - 150kB)
 Events1.size = 50k,150k
 # range of message source/destination addresses
-Events1.hosts = 0,15
+Events1.hosts = 0,53
 # Message ID prefix
 Events1.prefix = M
 

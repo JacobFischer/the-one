@@ -77,4 +77,7 @@ public class DTN2Reporter extends Report implements MessageListener {
 			}
 		}
 	}
+
+	public void storeCount(String s, int add) {}
+
 }

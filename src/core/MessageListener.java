@@ -53,4 +53,6 @@ public interface MessageListener {
 	 */
 	public void messageTransferred(Message m, DTNHost from, DTNHost to,
 			boolean firstDelivery);
+
+	public void storeCount(String s, int add);
 }

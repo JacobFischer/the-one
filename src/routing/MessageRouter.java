@@ -393,6 +393,7 @@ public abstract class MessageRouter {
 		for (MessageListener ml : this.mListeners) {
 			ml.messageTransferred(aMessage, from, this.host,
 					isFirstDelivery);
+			ml.storeCount("", 1);
 		}
 
 		return aMessage;

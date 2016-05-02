@@ -95,6 +95,7 @@ public class DistanceDelayReport extends Report implements MessageListener {
 	public void messageDeleted(Message m, DTNHost where, boolean dropped) {}
 	public void messageTransferStarted(Message m, DTNHost from, DTNHost to) {}
 	public void messageTransferAborted(Message m, DTNHost from, DTNHost to) {}
+	public void storeCount(String s, int add) {}
 
 	public void done() {
 		// report rest of the messages as 'not delivered' (time == -1)

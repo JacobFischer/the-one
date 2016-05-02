@@ -111,6 +111,10 @@ public class MessageStatsReport extends Report implements MessageListener {
 		}
 	}
 
+	public void storeCount(String s, int add) {
+		//System.out.println("s" + s);
+	}
+
 
 	public void newMessage(Message m) {
 		if (isWarmup()) {

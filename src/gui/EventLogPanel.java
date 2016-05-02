@@ -82,6 +82,8 @@ public class EventLogPanel extends JPanel
 	private EventLogControl msgDropCheck;
 	private EventLogControl msgAbortCheck;
 
+	public void storeCount(String s, int add) {}
+
 	/**
 	 * Creates a new log panel
 	 * @param gui The where this log belongs to (for callbacks)

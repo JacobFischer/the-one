@@ -53,4 +53,6 @@ public class CreatedMessagesReport extends Report implements MessageListener {
 	public void done() {
 		super.done();
 	}
+
+	public void storeCount(String s, int add) {}
 }

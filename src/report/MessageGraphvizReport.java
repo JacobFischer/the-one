@@ -50,6 +50,7 @@ public class MessageGraphvizReport extends Report implements MessageListener {
 	public void messageDeleted(Message m, DTNHost where, boolean dropped) {	}
 	public void messageTransferAborted(Message m, DTNHost from, DTNHost to) {}
 	public void messageTransferStarted(Message m, DTNHost from, DTNHost to) {}
+	public void storeCount(String s, int add) {}
 
 	@Override
 	public void done() {
