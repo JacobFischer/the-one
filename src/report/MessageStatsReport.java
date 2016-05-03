@@ -38,6 +38,8 @@ public class MessageStatsReport extends Report implements MessageListener {
 	private int nrofResponseDelivered;
 	private int nrofDelivered;
 
+	private Map<String, Integer> storedCounts;
+
 	/**
 	 * Constructor.
 	 */
@@ -63,6 +65,8 @@ public class MessageStatsReport extends Report implements MessageListener {
 		this.nrofResponseReqCreated = 0;
 		this.nrofResponseDelivered = 0;
 		this.nrofDelivered = 0;
+
+		this.storedCounts = new HashMap<String, Integer>();
 	}
 
 
@@ -113,6 +117,11 @@ public class MessageStatsReport extends Report implements MessageListener {
 
 	public void storeCount(String s, int add) {
 		//System.out.println("s" + s);
+		if(!this.storedCounts.containsKey(s)) {
+			this.storedCounts.put(s, 0);
+		}
+
+		this.storedCounts.put(s, this.storedCounts.get(s) + add);
 	}
 
 
@@ -178,6 +187,11 @@ public class MessageStatsReport extends Report implements MessageListener {
 			"\nrtt_avg: " + getAverage(this.rtt) +
 			"\nrtt_med: " + getMedian(this.rtt)
 			;
+
+		for (String key : this.storedCounts.keySet()) {
+			int count = this.storedCounts.get(key);
+			statsText += "\n" + key + ": " + count;
+		}
 
 		write(statsText);
 		super.done();

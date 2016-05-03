@@ -393,10 +393,22 @@ public abstract class MessageRouter {
 		for (MessageListener ml : this.mListeners) {
 			ml.messageTransferred(aMessage, from, this.host,
 					isFirstDelivery);
-			ml.storeCount("", 1);
 		}
 
+		this.storeCount("messages_transferred", 1);
+
 		return aMessage;
+	}
+
+	/**
+	 * Stored a count in all message listeners
+	 * @param key the key
+	 * @param num the number to add by
+	 */
+	public void storeCount(String key, int num) {
+		for (MessageListener ml : this.mListeners) {
+			ml.storeCount(key, num);
+		}
 	}
 
 	/**

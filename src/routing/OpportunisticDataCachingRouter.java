@@ -99,6 +99,24 @@ public class OpportunisticDataCachingRouter extends ActiveRouter {
 
 		//System.out.println("connection from " + from.toString());
 
+		if(m.getProperty("cached") != null) {
+			return returns; // no need to cache a cached response
+		}
+
+		Message request = m.getRequest();
+		if(request != null) {
+			if(this.hasCachedMessage(request.getId())) { // then it's a cache hit!
+				this.storeCount("cache_hit", 1);
+				Message newMessage = new Message(this.getHost(), request.getFrom(), request.getId() + "_CACHED", request.getSize());
+				newMessage.addProperty("cached", true);
+				this.getHost().createNewMessage(newMessage);
+			}
+			else {
+				this.storeCount("cache_miss", 1);
+			}
+			return returns; // it was a request, so no need to cache
+		}
+
 		// currently connected NCLs
 		List<DTNHost> ncls = new ArrayList<DTNHost>();
 		for(Connection con : this.getConnections()) {

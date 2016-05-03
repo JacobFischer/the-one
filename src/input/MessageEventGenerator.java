@@ -186,7 +186,7 @@ public class MessageEventGenerator implements EventQueue {
 	 * @see input.EventQueue#nextEvent()
 	 */
 	public ExternalEvent nextEvent() {
-		int responseSize = 0; /* zero stands for one way messages */
+		int responseSize = drawMessageSize()*2; /* zero stands for one way messages */
 		int msgSize;
 		int interval;
 		int from;

@@ -115,7 +115,7 @@ Events.nrof = 1
 Events1.class = MessageEventGenerator
 # (following settings are specific for the MessageEventGenerator class)
 # Creation interval in seconds (one new message every 25 to 35 seconds)
-Events1.interval = 25,35
+Events1.interval = 100,200
 # Message sizes (50kB - 150kB)
 Events1.size = 50k,150k
 # range of message source/destination addresses
