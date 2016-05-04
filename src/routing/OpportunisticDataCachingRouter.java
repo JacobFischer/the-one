@@ -190,6 +190,24 @@ public class OpportunisticDataCachingRouter extends ActiveRouter {
 		return returns;
 	}
 
+	@Override
+	public Message messageTransferred(String id, DTNHost from) {
+		Message m = super.messageTransferred(id, from);
+
+
+		// we want to do re-distribution upon recieving the request if it was too latent
+		if (m.getTo() == getHost() && m.getResponseSize() > 0) { // then it was transfered!
+			double latency = m.getReceiveTime() - m.getCreationTime();
+
+			double minLatency = -1*m.getCriticality() * 100; // simply allow 100 extra sec for each level of criticality, so 0 for class 0, 100 for class 1, ... 500 for class 5, etc.
+			if(latency > minLatency) { // then it was too latent, force cache it.
+				forceCache(m);
+			}
+		}
+
+		return m;
+	}
+
 	private void tryCache(Message m) {
 		int cacheLeft = this.getRemainingCacheSize();
 
