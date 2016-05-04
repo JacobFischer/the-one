@@ -200,8 +200,12 @@ public class OpportunisticDataCachingRouter extends ActiveRouter {
 			double latency = m.getReceiveTime() - m.getCreationTime();
 
 			double minLatency = -1*m.getCriticality() * 100; // simply allow 100 extra sec for each level of criticality, so 0 for class 0, 100 for class 1, ... 500 for class 5, etc.
+
 			if(latency > minLatency) { // then it was too latent, force cache it.
 				forceCache(m);
+			}
+			else {
+				tryToCacheBasedOnPopularity(m);
 			}
 		}
 
