@@ -24,6 +24,8 @@ import core.MessageListener;
 public class MessageStatsReport extends Report implements MessageListener {
 	private Map<String, Double> creationTimes;
 	private List<Double> latencies;
+	private List<Double> latenciesTracking;
+	private List<String> idsTracking;
 	private List<Integer> hopCounts;
 	private List<Double> msgBufferTime;
 	private List<Double> rtt; // round trip times
@@ -52,6 +54,8 @@ public class MessageStatsReport extends Report implements MessageListener {
 		super.init();
 		this.creationTimes = new HashMap<String, Double>();
 		this.latencies = new ArrayList<Double>();
+		this.latenciesTracking = new ArrayList<Double>();
+		this.idsTracking = new ArrayList<String>();
 		this.msgBufferTime = new ArrayList<Double>();
 		this.hopCounts = new ArrayList<Integer>();
 		this.rtt = new ArrayList<Double>();
@@ -103,8 +107,11 @@ public class MessageStatsReport extends Report implements MessageListener {
 
 		this.nrofRelayed++;
 		if (finalTarget) {
-			this.latencies.add(getSimTime() -
-				this.creationTimes.get(m.getId()) );
+			double latency = getSimTime() - this.creationTimes.get(m.getId());
+			this.latencies.add(latency);
+			if(this.idsTracking.contains(m.getId())) {
+				this.latenciesTracking.add(latency);
+			}
 			this.nrofDelivered++;
 			this.hopCounts.add(m.getHops().size() - 1);
 
@@ -117,6 +124,13 @@ public class MessageStatsReport extends Report implements MessageListener {
 
 	public void storeCount(String s, int add) {
 		//System.out.println("s" + s);
+
+		// this is a total hack because I didn't want to add another method to every message listener.
+		if(add == -1234) { // track the s as a message id
+			this.idsTracking.add(s);
+			return;
+		}
+
 		if(!this.storedCounts.containsKey(s)) {
 			this.storedCounts.put(s, 0);
 		}
@@ -180,6 +194,8 @@ public class MessageStatsReport extends Report implements MessageListener {
 			"\noverhead_ratio: " + format(overHead) +
 			"\nlatency_avg: " + getAverage(this.latencies) +
 			"\nlatency_med: " + getMedian(this.latencies) +
+			"\nlatencyTracking_avg: " + getAverage(this.latenciesTracking) +
+			"\nlatencyTracking_med: " + getMedian(this.latenciesTracking) +
 			"\nhopcount_avg: " + getIntAverage(this.hopCounts) +
 			"\nhopcount_med: " + getIntMedian(this.hopCounts) +
 			"\nbuffertime_avg: " + getAverage(this.msgBufferTime) +

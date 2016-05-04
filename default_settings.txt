@@ -9,6 +9,7 @@ Scenario.updateInterval = 0.1
 # 43k ~= 12h
 Scenario.endTime = 43k
 
+# These ranges and speeds are most simialr to WiFi
 firstinterface.type = SimpleBroadcastInterface
 # transmit speed of 2 Mbps = 250kBps
 firstinterface.transmitSpeed = 240k
@@ -117,7 +118,7 @@ Events1.class = MessageEventGenerator
 # Creation interval in seconds (one new message every 25 to 35 seconds)
 Events1.interval = 100,200
 # Message sizes (50kB - 150kB)
-Events1.size = 50k,150k
+Events1.size = 0.25M, 2M
 # range of message source/destination addresses
 Events1.hosts = 0,53
 # Message ID prefix

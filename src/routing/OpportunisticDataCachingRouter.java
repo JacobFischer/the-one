@@ -22,6 +22,11 @@ public class OpportunisticDataCachingRouter extends ActiveRouter {
 
 	private int cacheSize;
 	private HashMap<String, Message> cachedMessages;
+	private HashMap<String, Integer> timesSeen; // used to calculate popularity
+
+	public static final int COUNT_CRITICALITY_MIN = Message.CRITICALITY_MIN;
+	public static final int COUNT_CRITICALITY_MAX = Message.CRITICALITY_MAX; // by default count all
+	public static final int COUNT_AFTER = 21500; // half of default time, TODO: read from settings and *0.5 here....
 
 	/**
 	 * Constructor. Creates a new message router based on the settings in
@@ -33,6 +38,7 @@ public class OpportunisticDataCachingRouter extends ActiveRouter {
 
 		this.cacheSize = this.getBufferSize();
 		this.cachedMessages = new HashMap<String, Message>();
+		this.timesSeen = new HashMap<String, Integer>();
 	}
 
 	/**
@@ -44,6 +50,7 @@ public class OpportunisticDataCachingRouter extends ActiveRouter {
 
 		this.cacheSize = this.getBufferSize();
 		this.cachedMessages = new HashMap<String, Message>();
+		this.timesSeen = new HashMap<String, Integer>();
 	}
 
 
@@ -72,6 +79,7 @@ public class OpportunisticDataCachingRouter extends ActiveRouter {
 	 * @param message the message to cache
 	 */
 	public void cacheMessage(Message m) {
+		//System.out.println("cahcing " + m.getId());
 		this.cachedMessages.put(m.getId(), m);
 	}
 
@@ -114,8 +122,18 @@ public class OpportunisticDataCachingRouter extends ActiveRouter {
 			else {
 				this.storeCount("cache_miss", 1);
 			}
+
+			if(request.getCreationTime() > OpportunisticDataCachingRouter.COUNT_AFTER) {
+				if(m.getCriticality() >= OpportunisticDataCachingRouter.COUNT_CRITICALITY_MIN && m.getCriticality() <= OpportunisticDataCachingRouter.COUNT_CRITICALITY_MAX) {
+					this.storeCount(m.getId(), -1234); // hack to track that id's latency
+				}
+			}
+
 			return returns; // it was a request, so no need to cache
 		}
+
+		// try to cache now!
+
 
 		// currently connected NCLs
 		List<DTNHost> ncls = new ArrayList<DTNHost>();
@@ -126,6 +144,15 @@ public class OpportunisticDataCachingRouter extends ActiveRouter {
 			}
 		}
 
+		// Used for popularity
+		String id = m.getId();
+		if(!this.timesSeen.containsKey(id)) {
+			this.timesSeen.put(id, 0);
+		}
+
+		int timesSeenMessage = this.timesSeen.get(id) + 1;
+		this.timesSeen.put(id, timesSeenMessage);
+
 		// normally the soldiers and NCLs would re-classify based on some military heuristic. We will do random for this simulation
 		m.setCriticality(m.getCriticality() + ThreadLocalRandom.current().nextInt(-1, 2)); // randomly add -1, 0, or 1 to the criticallity
 
@@ -134,7 +161,7 @@ public class OpportunisticDataCachingRouter extends ActiveRouter {
 		}
 
 		 // try to decide who else should cache it based on criticallity
-		switch(m.getCriticality()) {
+		switch(m.getCriticality()) { // to test for just popularity always ensure class -5, criticality just sort for most critical
 			case 0:
 				m.updateProperty("to_cache", "all");
 				break;
@@ -146,10 +173,10 @@ public class OpportunisticDataCachingRouter extends ActiveRouter {
 					m.updateProperty("to_cache", ncls.get(0).toString());
 				}
 				break;
-			// class 3+ cache here
+			case -4:
+			case -5: // cache based on popularity
+				tryToCacheBasedOnPopularity(m);
 		}
-
-		this.tryCache(m);
 
 		Object property = m.getProperty("to_cache");
 
@@ -168,6 +195,27 @@ public class OpportunisticDataCachingRouter extends ActiveRouter {
 
 		if(cacheLeft >= m.getSize()) {
 			this.cacheMessage(m);
+		}
+	}
+
+	private void tryToCacheBasedOnPopularity(Message m) {
+		int timesSeenMessage = this.timesSeen.get(m.getId());
+		int popularity = timesSeenMessage * m.getHopCount();
+		boolean cache = false;
+		if(popularity > 0) { // verify we have less popular data to uncache
+			for(String key : this.cachedMessages.keySet()) {
+				Message cached = this.cachedMessages.get(key);
+
+				int cachedPopularity = this.timesSeen.get(cached.getId()) * m.getHopCount();
+				if(popularity > cachedPopularity) {
+					cache = true;
+					break;
+				}
+			}
+		}
+
+		if(cache) {
+			this.forceCache(m);
 		}
 	}
 
